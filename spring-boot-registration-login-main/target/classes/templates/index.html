@@ -1,0 +1,44 @@
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.js"></script>
+    <script type="text/javascript">
+            var stompClient = null;
+            var privateStompClient = null;
+
+            var socket = new SockJS('/ws');
+            stompClient = Stomp.over(socket);
+
+            socket = new SockJS('/ws');
+            privateStompClient = Stomp.over(socket);
+            privateStompClient.connect({}, function(frame) {
+                    console.log(frame);
+                    privateStompClient.subscribe('/user/specific', function(result) {
+                    console.log(result.body)
+                        show(JSON.parse(result.body));
+                    });
+                });
+
+
+            function show(message) {
+                var response = document.getElementById('messages');
+                var p = document.createElement('p');
+                p.innerHTML= "message: "  + message.text;
+                response.appendChild(p);
+            }
+        </script>
+</head>
+<body>
+<div>
+    
+    <p>
+        Welcome <b>[[${#request.userPrincipal.principal.fullName}]]</b>
+    </p>
+    
+    <br />
+        <div id="messages"></div>
+
+</div>
+
+</body>
+</html>
